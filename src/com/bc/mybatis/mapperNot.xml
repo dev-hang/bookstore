@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Nbookstore">
+	<select id="Nselectall" resultType="com.bc.model.vo.GuestBookVO" parameterType="map">
+		<![CDATA[
+		SELECT *
+		FROM (SELECT ROWNUM R_NUM, NOTICE.*
+		        FROM (SELECT *
+		              FROM NOTICE
+		              WHERE B_TYPE = 1
+		              ORDER BY N_NUM DESC
+		             ) NOTICE
+		     )    
+		WHERE R_NUM BETWEEN #{begin} AND #{end}
+		]]>
+	</select>
+	<select id="Nselectpr" resultType="com.bc.model.vo.GuestBookVO" parameterType="int">
+		<![CDATA[
+			SELECT N.*, ROWNUM FROM NOTICE N
+			    WHERE N_NUM < #{nNum}
+			    AND ROWNUM < 2
+			    ORDER BY N.N_NUM DESC
+		]]>
+	</select>
+	<select id="Nselectne" resultType="com.bc.model.vo.GuestBookVO" parameterType="int">
+		<![CDATA[
+			SELECT N.*, ROWNUM FROM NOTICE N
+			    WHERE N_NUM > #{nNum}
+			    AND ROWNUM < 2
+			    ORDER BY N.N_NUM
+		]]>
+	</select>
+	<insert id="Ninsert" parameterType="map">
+		INSERT INTO NOTICE VALUES(SEQNOTICE.nextval,#{subject},#{content},SYSDATE,#{upload},1)
+	</insert>
+	<select id="Nselectone" resultType="com.bc.model.vo.GuestBookVO" parameterType="int">
+		SELECT * FROM NOTICE
+		WHERE N_NUM = #{nNum}
+	</select>
+	
+	<select id="totalCount" resultType="int">
+		SELECT COUNT(*) FROM NOTICE
+		WHERE B_TYPE = 1
+	</select>
+	<select id="Nall" resultType="com.bc.model.vo.BookVO" parameterType="string">
+		SELECT * FROM BOOK
+		WHERE L_CODE = #{lcode}
+		AND B_TYPE = 1
+	</select>
+	
+	<select id="searchList" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		SELECT * FROM BOOK
+			WHERE B_TYPE = 1 
+			AND(B_NAME LIKE '%'||#{search}||'%' 
+			OR B_COMPANY LIKE '%'||#{search}||'%'
+			OR WRITER_NAME LIKE '%'||#{search}||'%')
+	</select>
+	<select id="searchcom" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		SELECT * FROM BOOK
+   		WHERE B_COMPANY LIKE '%'||#{search}||'%'
+   		AND B_TYPE = 1
+	</select>
+	
+	<select id="searchwri" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		SELECT * FROM BOOK
+   		WHERE WRITER_NAME LIKE '%'||#{search}||'%'
+   		AND B_TYPE = 1
+	</select>
+	
+	<select id="searchbna" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		SELECT * FROM BOOK
+   		WHERE B_NAME LIKE '%'||#{search}||'%'
+   		AND B_TYPE = 1
+	</select>
+	<select id="searchelist" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		SELECT * FROM BOOK
+			WHERE B_TYPE = 2
+			AND(B_NAME LIKE '%'||#{search}||'%'
+			OR B_COMPANY LIKE '%'||#{search}||'%'
+			OR WRITER_NAME LIKE '%'||#{search}||'%')
+	</select>
+	<select id="searcheCom" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		SELECT * FROM BOOK
+			WHERE B_COMPANY LIKE '%'||#{search}||'%'
+			AND B_TYPE = 2
+	</select>
+	<select id="searcheWri" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		SELECT * FROM BOOK
+			WHERE WRITER_NAME LIKE '%'||#{search}||'%'
+			AND B_TYPE = 2
+	</select>
+	<select id="searcheBna" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		SELECT * FROM BOOK
+			WHERE B_NAME LIKE '%'||#{search}||'%'
+			AND B_TYPE = 2
+	</select>
+	<update id="Nupdate" parameterType="map">
+		UPDATE NOTICE 
+		SET SUBJECT = #{subject},
+			CONTENT = #{content}
+		WHERE N_NUM = #{nNum}
+	</update>
+	
+	<select id="1list" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		<![CDATA[
+			SELECT * FROM BOOK
+				WHERE H_CODE = #{hCode}
+				AND L_CODE = #{hCode} || '1'
+				AND ROWNUM <= 4
+				AND B_TYPE = 1
+		]]>
+	</select>
+	<select id="2list" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		<![CDATA[
+			SELECT * FROM BOOK
+				WHERE H_CODE = #{hCode}
+				AND L_CODE = #{hCode} || '2'
+				AND ROWNUM <= 4
+				AND B_TYPE = 1
+		]]>
+	</select>
+	<select id="3list" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		<![CDATA[
+			SELECT * FROM BOOK
+				WHERE H_CODE = #{hCode}
+				AND L_CODE = #{hCode} || '3'
+				AND ROWNUM <= 4
+				AND B_TYPE = 1
+		]]>
+	</select>
+	<select id="4list" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		<![CDATA[
+			SELECT * FROM BOOK
+				WHERE H_CODE = #{hCode}
+				AND L_CODE = #{hCode} || '4'
+				AND ROWNUM <= 4
+				AND B_TYPE = 1
+		]]>
+	</select>
+	
+	<select id="5list" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		<![CDATA[
+			SELECT * FROM BOOK
+				WHERE H_CODE = #{hCode}
+				AND L_CODE = #{hCode} || '5'
+				AND ROWNUM <= 4
+				AND B_TYPE = 1
+		]]>
+	</select>
+	
+	<select id="allList" resultType="com.bc.model.vo.BookVO" parameterType="map">
+		SELECT * FROM BOOK 
+			WHERE H_CODE = #{hCode}
+			AND L_CODE = #{lCode}
+			AND B_TYPE = 1
+	</select>
+	<update id="Ndelete" parameterType="map">
+		UPDATE NOTICE
+		SET B_TYPE = 0
+		WHERE N_NUM = #{nNum}
+	</update>
+	
+</mapper>

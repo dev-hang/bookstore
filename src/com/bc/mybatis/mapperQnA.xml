@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="qbookstore">
+	<select id="selectall" parameterType="Map" resultType="com.bc.model.vo.QnAVO">
+		SELECT *
+		FROM (SELECT ROWNUM R_NUM, Q.*
+		        FROM (SELECT *
+		              FROM QNA
+		              ORDER BY Q_NUM DESC
+		             ) Q
+		     )    
+		WHERE R_NUM BETWEEN #{begin} AND #{end}
+	</select>	
+	
+	<select id="selectone" parameterType="int" resultType="com.bc.model.vo.QnAVO">
+		SELECT * FROM QNA 
+		 WHERE Q_NUM = #{qNum}
+	</select>
+	
+	<select id="total" resultType="int">
+		SELECT COUNT(*) FROM QNA
+	</select>
+	
+	<!-- qNum 시퀀스로 변경 -->
+	<insert id="insert" parameterType="Map">
+		INSERT INTO QNA VALUES(QNA_SEQ.NEXTVAL, #{memberId}, 
+                    (SELECT USERNAME FROM MEMBER WHERE MEMBER_ID = #{memberId}), 
+                    (SELECT PASSWORD FROM MEMBER WHERE MEMBER_ID = #{memberId}),
+                    #{subject}, #{category}, #{rContent}, #{upload, jdbcType=VARCHAR}, 
+                    (SELECT B_CODE FROM BOOK WHERE B_NAME = #{bName}),
+                    (SELECT B_TYPE FROM BOOK WHERE B_NAME = #{bName}), 
+                    SYSDATE) 
+	</insert>
+	
+	<delete id="delete" parameterType="int">
+		DELETE FROM QNA
+		 WHERE Q_NUM = #{qNum}
+	</delete>
+	
+	<update id="update" parameterType="com.bc.model.vo.QnAVO">
+		UPDATE QNA SET SUBJECT = #{subject},
+					   CATEGORY = #{category},
+				       R_CONTENT = #{rContent},
+					   UPLOAD = #{upload, jdbcType=VARCHAR}
+		 WHERE Q_NUM = #{qNum}			   
+	</update>
+	
+	<!-- /////////////////댓글 SQL문///////////////// -->
+	<select id="selectC" parameterType="int" resultType="com.bc.model.vo.CommentVO">
+		SELECT * FROM COMMENTS 
+		 WHERE Q_NUM = #{qNum}
+	</select>
+	
+	<!-- 댓글 개수 표시 -->
+	<select id="countC" parameterType="int">
+		SELECT COUNT(*) FROM COMMENTS WHERE Q_NUM = #{qNum}
+	</select>
+	
+	<!-- cIdx 시퀀스로 변경 -->
+	<insert id="insertC" parameterType="com.bc.model.vo.CommentVO">
+		INSERT INTO COMMENTS 
+		VALUES(null, #{qNum}, null, #{memberId}, #{content}, 
+        (SELECT PASSWORD FROM MEMBER WHERE MEMBER_ID = #{memberId}),
+        (SELECT USERNAME FROM MEMBER WHERE MEMBER_ID = #{memberId}),
+        COMMENT_SEQ.NEXTVAL)
+	</insert>
+	
+	<delete id="deleteC" parameterType="int">
+		DELETE FROM COMMENTS
+		 WHERE C_IDX = #{cIdx}
+	</delete>
+	
+	<update id="updateC" parameterType="com.bc.model.vo.CommentVO">
+		UPDATE COMMENTS SET CONTENT = #{content}
+		 WHERE C_IDX = #{cIdx}	
+	</update>
+	
+</mapper>
+
